@@ -1,4 +1,4 @@
-# Uploading CSV file from Object Storage to PostgreSQL
+# Uploading a CSV file to PostgreSQL
 
 ## pgfutter (CLI)
 pgfutter is a CLI tool to import CSV and JSON into PostgreSQL. To download and look at the README, head to the [GitHub repo](https://github.com/lukasmartinelli/pgfutter).
