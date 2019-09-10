@@ -17,6 +17,8 @@ pgfutter --host blah.blahblah.databases.appdomain.cloud --port 32557 --dbname ib
 ```
 NOTE: The `-d` flag denotes the delimiter to use. In this case, the delimiter is a non-printable backspace character that looks like `BS` and the Unicode is '0x08'. The `$` is necessary to ensure that the shell doesn't interpret the delimiter and the `^H` that you see in the sample command is how the backspace symbol was interpreted in the CLI after I copy and pasted the full command from Sublime Text.
 
+#### Runtime for inserting 10,000 rows with 43 columns: 1.389s
+
 ## Python (Python3)
 The Python script will take a CSV file, parse it, and then upload the data to a PostgreSQL table. You can provide it with a CSV file locally or stored on AWS S3. The local file takes precedence. When uploading to a PostgreSQL table, the table will be created based on the values provided in the ini file if the table does not already exist.
 
@@ -76,3 +78,5 @@ Run the python script.
 ```
 python script.py
 ```
+
+#### Runtime for inserting 10,000 rows with 43 columns: 3.313s
