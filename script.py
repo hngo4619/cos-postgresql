@@ -78,7 +78,7 @@ def create(cur, conn):
 def download():
     """ Download the CSV from S3 or COS """
     aws = config(section='aws')
-    # ibm = config(section='ibm')
+    ibm = config(section='ibm')
     local = config(section='local')
 
     if local.get('path').strip():
@@ -94,6 +94,19 @@ def download():
         client.download_file(aws.get('bucket'), aws.get('filename'), 'tmp_csv.csv')
         print("File downloaded from AWS S3.")
         upload("tmp_csv.csv")
+
+        # cos = ibm_boto3.client(
+        #     service_name='s3',
+        #     ibm_api_key_id=ibm.get('api_key_id'),
+        #     ibm_service_instance_id=ibm.get('instance_id'),
+        #     ibm_auth_endpoint=ibm.get('auth_endpoint'),
+        #     endpoint_url=ibm.get('endpoint')
+        # )
+        #
+        # cos.Object(ibm.get('bucket'), ibm.get('filename')).download_file('./tmp.csv')
+
+        # cos.download_file(Bucket=ibm.get('bucket'), Key=ibm.get('filename'), Filename='ibm_tmp_csv.csv')
+
 
 def upload(file):
     """ Insert data into PostgreSQL """
