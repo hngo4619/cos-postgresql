@@ -1,6 +1,6 @@
 # Uploading a CSV file to PostgreSQL
 
-## pgfutter (CLI)
+## pgfutter
 pgfutter is a CLI tool to import CSV and JSON into PostgreSQL. To download and look at the README, head to the [GitHub repo](https://github.com/lukasmartinelli/pgfutter).
 
 After installation, you can move the pgfutter file to your binary directory to use it as a binary tool going forward. To import data from a CSV to a PostgreSQL table, execute the command below after modifying the required fields.
@@ -80,3 +80,10 @@ python script.py
 ```
 
 #### Runtime for inserting 10,000 rows with 43 columns: 3.313s
+
+## psql 
+If you want to execute queries to insert data directly in Postgres using psql, you can do so after converting your CSV to a query. [CSV TO SQL](https://csvtosql.com/) is an easy to use online converter that supports the non-printable backspace character as a delimiter. Simply paste the contents of your CSV, paste the backspace character into the separator, and click Convert. You should then receive a SQL query for inserting the CSV data into the table (as well as a command to create a table which you shouldn't need). You may need to do a find-and-replace to insert the data into the correct table instead of the auto-generated one.
+
+![CSV to SQL](csvtosql.png)
+
+With your INSERT INTO query in hand, you can then execute it in the psql shell normally.
