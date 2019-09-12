@@ -1,3 +1,19 @@
+"""
+   Copyright 2019 Huy Ngo
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
 #!/usr/bin/python
 import boto3
 import csv
@@ -6,6 +22,7 @@ import os
 import psycopg2
 import time
 from configparser import ConfigParser
+from ibm_botocore.client import Config, ClientError
 
 def cleanup(cur, conn):
     """ Delete temp file if exists """
@@ -20,19 +37,20 @@ def cleanup(cur, conn):
     conn.close()
     print('Database connection closed.')
 
-def config(filename='database.ini', section=''):
+def config(file='database.ini', section=''):
+    """ Read section from configuration file """
     parser = ConfigParser()
-    parser.read(filename)
+    parser.read(file)
 
-    db = {}
+    config = {}
     if parser.has_section(section):
         params = parser.items(section)
         for param in params:
-            db[param[0]] = param[1]
+            config[param[0]] = param[1]
     else:
-        raise Exception('Section {0} not found in the {1} file'.format(section, filename))
+        raise Exception('Unable to find section in config file')
 
-    return db
+    return config
 
 def connect():
     """ Connect to the PostgreSQL database server """
@@ -95,17 +113,15 @@ def download():
         print("File downloaded from AWS S3.")
         upload("tmp_csv.csv")
 
-        # cos = ibm_boto3.client(
-        #     service_name='s3',
+        # s3 = ibm_boto3.resource("s3",
         #     ibm_api_key_id=ibm.get('api_key_id'),
         #     ibm_service_instance_id=ibm.get('instance_id'),
         #     ibm_auth_endpoint=ibm.get('auth_endpoint'),
+        #     config=Config(signature_version="oauth"),
         #     endpoint_url=ibm.get('endpoint')
         # )
         #
-        # cos.Object(ibm.get('bucket'), ibm.get('filename')).download_file('./tmp.csv')
-
-        # cos.download_file(Bucket=ibm.get('bucket'), Key=ibm.get('filename'), Filename='ibm_tmp_csv.csv')
+        # s3.meta.client.download_file('accolade-hdngo-001', 'test_processed.csv', './tmp.csv')
 
 
 def upload(file):
