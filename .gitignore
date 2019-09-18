@@ -3,3 +3,7 @@ __pycache__
 database.ini
 *.csv
 postgres*
+export-database.ini
+test-files/
+export.py
+.gitignore

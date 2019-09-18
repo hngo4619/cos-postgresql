@@ -1,4 +1,4 @@
-# Uploading a CSV file to PostgreSQL
+# Inserting a CSV file to PostgreSQL
 
 ## pgfutter
 pgfutter is a CLI tool to import CSV and JSON into PostgreSQL. To download and look at the README, head to the [GitHub repo](https://github.com/lukasmartinelli/pgfutter).
@@ -20,9 +20,10 @@ NOTE: The `-d` flag denotes the delimiter to use. In this case, the delimiter is
 #### Runtime for inserting 10,000 rows with 43 columns: 1.389s
 
 ## Python (Python3)
+
 The Python script will take a CSV file, parse it, and then upload the data to a PostgreSQL table. You can provide it with a CSV file locally or stored on AWS S3. The local file takes precedence. When uploading to a PostgreSQL table, the table will be created based on the values provided in the ini file if the table does not already exist.
 
-To get started, create a new file called `database.ini` and copy the contents of `sample.ini` into it. Then, fill out the variables within for each section.
+To get started, create a new file called `import-database.ini` and copy the contents of `sample.ini` into it. Then, fill out the variables within for each section.
 
 ### Variables
 
@@ -76,7 +77,7 @@ pip install -r requirements.txt
 
 Run the python script.
 ```
-python script.py
+python data-transfer.py import-database.ini --Import
 ```
 
 #### Runtime for inserting 10,000 rows with 43 columns: 3.313s
@@ -87,3 +88,60 @@ If you want to execute queries to insert data directly in Postgres using psql, y
 ![CSV to SQL](csvtosql.png)
 
 With your INSERT INTO query in hand, you can then execute it in the psql shell normally.
+
+# Saving PostgreSQL tables to CSV and Uploading files to S3
+
+## Export using Python (Python3)
+
+The Python script when used with `Export` flag, will use the provided configuration file to connect to the database; loops through all the tables in a given database and schema. For each table, it exports the data to a CSV file created locally, uploads the file to AWS S3 and deletes the local file.
+
+To get started, create a new file called `export-database.ini` and copy the contents of `sample-export.ini` into it. Then, fill out the variables within for each section.
+
+### Variables
+
+#### PostgreSQL Section
+```
+Host: Hostname for your PostgreSQL instance
+Port: Port for your PostgreSQL instance
+Database: Name of the database in your PostgreSQL instance
+User: Username with accessing to your PostgreSQL database
+Password: Password corresponding to User
+```
+
+#### Table Section
+```
+Schema: Schema that your tables exist in
+```
+
+
+#### Local Section
+```
+Path: Path to the directory to store the CSV files
+```
+NOTE: The name of the table is used as the CSV filename 
+
+#### AWS Section
+```
+Access_Key_ID: AWS Access Key ID
+Secret_Access_Key: AWS Secret Access Key
+Bucket: Name of your bucket on AWS S3
+```
+NOTE: Table name is used for the file uploaded
+#### IBM Section (Work In Progress)
+```
+API_Key_ID: API Key from your Cloud Object Storage (COS) instance credentials
+Instance_ID: Instance ID of your COS instance
+Auth_Endpoint: Authorization Endpoint for IBM Cloud. Typically this will be https://iam.cloud.ibm.com/identity/token
+Endpoint: Endpoint for your COS instance based on reigon. This will look something like https://s3.ap.cloud-object-storage.appdomain.cloud
+```
+NOTE: Table name is used for the file uploaded
+### Running the Script
+You need to install the required packages beforehand by either installing them manually or passing in the `requirements.txt` file to pip.
+```
+pip install -r requirements.txt
+```
+
+Run the python script.
+```
+python data-transfer.py export-database.ini --Export
+```
