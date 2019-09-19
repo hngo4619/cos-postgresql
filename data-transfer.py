@@ -139,27 +139,30 @@ def upload(filename):
     aws = config(section='aws')
     ibm = config(section='ibm')
     local = config(section='local')
-    s3 = boto3.client(
-        's3',
-        aws_access_key_id=aws.get('access_key_id'),
-        aws_secret_access_key=aws.get('secret_access_key'),
-    )
+    if aws.get('access_key_id').strip() and aws.get('secret_access_key').strip() and aws.get('bucket').strip():
+        s3 = boto3.client(
+            's3',
+            aws_access_key_id=aws.get('access_key_id'),
+            aws_secret_access_key=aws.get('secret_access_key'),
+        )
 
-    s3.upload_file(local.get('path') + '/' + filename , aws.get('bucket'), filename)
-    print("File Uploaded to AWS S3 - ", filename)
+        s3.upload_file(local.get('path') + '/' + filename , aws.get('bucket'), filename)
+        print("File Uploaded to AWS S3 - ", filename)
+    elif ibm.get('api_key_id').strip() and ibm.get('instance_id').strip() and ibm.get('auth_endpoint').strip() and ibm.get('endpoint').strip() and ibm.get('bucket').strip():
 
-    # IBM COS
-    # cos = ibm_boto3.resource("s3",
-    #     ibm_api_key_id=ibm.get('api_key_id'),
-    #     ibm_service_instance_id=ibm.get('instance_id'),
-    #     ibm_auth_endpoint=ibm.get('auth_endpoint'),
-    #     config=Config(signature_version="oauth"),
-    #     endpoint_url=ibm.get('endpoint')
-    # )
+        # IBM COS
+        cos = ibm_boto3.resource("s3",
+            ibm_api_key_id=ibm.get('api_key_id'),
+            ibm_service_instance_id=ibm.get('instance_id'),
+            ibm_auth_endpoint=ibm.get('auth_endpoint'),
+            config=Config(signature_version="oauth"),
+            endpoint_url=ibm.get('endpoint')
+        )
 
-    # cos.meta.client.upload_file(local.get('path') +  filename ,ibm.get('bucket'), filename)
-    # print("File Uploaded to IBM COS - ", filename)
-
+        cos.meta.client.upload_file(local.get('path') +  '/' + filename ,ibm.get('bucket'), filename)
+        print("File Uploaded to IBM COS - ", filename)
+    else:
+        print("Details are missing to upload through AWS/IBM COS")
 
 ################################## Import methods ########################################
 def cleanup(cur, conn):
