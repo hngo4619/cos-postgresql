@@ -23,7 +23,7 @@ NOTE: The `-d` flag denotes the delimiter to use. In this case, the delimiter is
 
 The Python script will take a CSV file, parse it, and then upload the data to a PostgreSQL table. You can provide it with a CSV file locally or stored on AWS S3. The local file takes precedence. When uploading to a PostgreSQL table, the table will be created based on the values provided in the ini file if the table does not already exist.
 
-To get started, create a new file called `import-database.ini` and copy the contents of `sample.ini` into it. Then, fill out the variables within for each section.
+To get started, create a new file called `import-database.ini` and copy the contents of `sample-import.ini` into it. Then, fill out the variables within for each section.
 
 ### Variables
 
@@ -88,6 +88,8 @@ If you want to execute queries to insert data directly in Postgres using psql, y
 ![CSV to SQL](csvtosql.png)
 
 With your INSERT INTO query in hand, you can then execute it in the psql shell normally.
+
+
 
 # Saving PostgreSQL tables to CSV and Uploading files to S3
 

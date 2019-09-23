@@ -28,7 +28,7 @@ from configparser import ConfigParser
 import argparse
 
 ################################ Argument Parser ######################################
-parser  =   argparse.ArgumentParser(description='Suuply config file and do Export or Import based on input')
+parser  =   argparse.ArgumentParser(description='Supply config file and do Export or Import based on input')
 parser.add_argument('config',type=str, help="Configuration file")
 parser.add_argument('--Import', action='store_true', help="Use this argument to do the import process using provided configuration file")
 parser.add_argument('--Export', action='store_true', help="Use this argument to do the export process using provided configuration file")
