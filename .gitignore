@@ -4,6 +4,7 @@ database.ini
 *.csv
 postgres*
 export-database.ini
+import-database.ini
 test-files/
 export.py
 .gitignore

@@ -59,7 +59,7 @@ Bucket: Name of your bucket on AWS S3
 Filename: Filename for your CSV in your S3 Bucket
 ```
 
-#### IBM Section (Work In Progress)
+#### IBM Section 
 ```
 API_Key_ID: API Key from your Cloud Object Storage (COS) instance credentials
 Instance_ID: Instance ID of your COS instance
@@ -129,7 +129,7 @@ Secret_Access_Key: AWS Secret Access Key
 Bucket: Name of your bucket on AWS S3
 ```
 NOTE: Table name is used for the file uploaded
-#### IBM Section (Work In Progress)
+#### IBM Section
 ```
 API_Key_ID: API Key from your Cloud Object Storage (COS) instance credentials
 Instance_ID: Instance ID of your COS instance
