@@ -30,18 +30,16 @@ import argparse
 ################################ Argument Parser ######################################
 parser  =   argparse.ArgumentParser(description='Supply config file and do Export or Import based on input')
 parser.add_argument('config',type=str, help="Configuration file")
-parser.add_argument('--i', action='store_true', help="Use this argument to do the import process using provided configuration file")
-parser.add_argument('--e', action='store_true', help="Use this argument to do the export process using provided configuration file")
-parser.add_argument('--delete', action='store_true', help="Use this argument to delete the local file after importing")
+parser.add_argument('--delete', action='store_true', help="Use this argument to delete the local file after importing/exporting")
 
-port = parser.add_mutually_exclusive_group(required=True)
-port.add_argument('--i', action='store_true', help="Use this argument to do the import process using provided configuration file")
-port.add_argument('--e', action='store_true', help="Use this argument to do the export process using provided configuration file")
+flag = parser.add_mutually_exclusive_group(required=True)
+flag.add_argument('--i', action='store_true', help="Use this argument to do the import process using provided configuration file")
+flag.add_argument('--e', action='store_true', help="Use this argument to do the export process using provided configuration file")
 
-group = parser.add_mutually_exclusive_group(required=True)
-group.add_argument('--local', action='store_true', help="Use this argument to import from local file")
-group.add_argument('--ibm', action='store_true', help="Use this argument to import from IBM COS")
-group.add_argument('--aws', action='store_true', help="Use this argument to import from AWS S3")
+storage = parser.add_mutually_exclusive_group(required=True)
+storage.add_argument('--local', action='store_true', help="Use this argument to import from local file")
+storage.add_argument('--ibm', action='store_true', help="Use this argument to import from IBM COS")
+storage.add_argument('--aws', action='store_true', help="Use this argument to import from AWS S3")
 
 args    =   parser.parse_args()
 
@@ -138,11 +136,12 @@ def export(table):
 
 def cleanup_after_export(file):
     """ Delete local files """
-    try:
-        os.remove(file)
-        print("Deleted local file - ", file)
-    except OSError:
-        pass
+    if(args.delete):
+        try:
+            os.remove(file)
+            print("Deleted local file - ", file)
+        except OSError:
+            pass
 
 
 def upload(filename):
@@ -173,13 +172,13 @@ def upload(filename):
         cos.meta.client.upload_file(local.get('path') +  '/' + filename ,ibm.get('bucket'), filename)
         print("File Uploaded to IBM COS - ", filename)
     elif args.local:
-        print("Local flag is not valid for export")
+        print("--local flag is not valid for export!!! To upload to COS or S3 choose --ibm or --aws respectively")
     else:
         print("Details are missing to upload through AWS/IBM COS")
 
 ################################## Import methods ########################################
 def cleanup(cur, conn):
-    local = config(section='local')
+    params = config(section='local')
     """ Delete temp file if exists """
     try:
         os.remove("tmp_csv.csv")
@@ -294,6 +293,7 @@ if __name__ == '__main__':
     print(args.config)
     start = time.time()
     cur, conn = connect()
+
     if (args.e):
         print("Export arg supplied")
         read_schema()
