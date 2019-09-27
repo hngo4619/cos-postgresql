@@ -147,7 +147,7 @@ You need to install the required packages beforehand by either installing them m
 pip install -r requirements.txt
 ```
 
-Run the python script. Depending on where you are exporting a CSV to between AWS S3 or IBM COS, you must pass in a corresponding flag and have the ini section values populated.
+Run the python script. Depending on where you are exporting a CSV to between AWS S3 or IBM COS, you must pass in a corresponding flag and have the ini section values populated. You can optionally pass in the `--delete` flag to delete each local file created.
 ```
-python data-transfer.py export-database.ini --e --aws/--ibm
+python data-transfer.py export-database.ini --e --aws/--ibm --delete
 ```
