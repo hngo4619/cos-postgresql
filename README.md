@@ -23,7 +23,7 @@ NOTE: The `-d` flag denotes the delimiter to use. In this case, the delimiter is
 
 The Python script will take a CSV file, parse it, and then upload the data to a PostgreSQL table. You can provide it with a CSV file locally or stored on AWS S3. The local file takes precedence. When uploading to a PostgreSQL table, the table will be created based on the values provided in the ini file if the table does not already exist.
 
-To get started, create a new file called `import-database.ini` and copy the contents of `sample.ini` into it. Then, fill out the variables within for each section.
+To get started, create a new file called `import-database.ini` and copy the contents of `sample-import.ini` into it. Then, fill out the variables within for each section.
 
 ### Variables
 
@@ -92,6 +92,8 @@ If you want to execute queries to insert data directly in Postgres using psql, y
 
 With your INSERT INTO query in hand, you can then execute it in the psql shell normally.
 
+
+
 # Saving PostgreSQL tables to CSV and Uploading files to S3
 
 ## Export using Python (Python3)
@@ -116,7 +118,6 @@ Password: Password corresponding to User
 Schema: Schema that your tables exist in
 ```
 
-
 #### Local Section
 ```
 Path: Path to the directory to store the CSV files
@@ -130,6 +131,7 @@ Secret_Access_Key: AWS Secret Access Key
 Bucket: Name of your bucket on AWS S3
 ```
 NOTE: Table name is used for the file uploaded
+
 #### IBM Section
 ```
 API_Key_ID: API Key from your Cloud Object Storage (COS) instance credentials
@@ -138,6 +140,7 @@ Auth_Endpoint: Authorization Endpoint for IBM Cloud. Typically this will be http
 Endpoint: Endpoint for your COS instance based on reigon. This will look something like https://s3.ap.cloud-object-storage.appdomain.cloud
 ```
 NOTE: Table name is used for the file uploaded
+
 ### Running the Script
 You need to install the required packages beforehand by either installing them manually or passing in the `requirements.txt` file to pip.
 ```
