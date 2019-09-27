@@ -78,9 +78,9 @@ You need to install the required packages beforehand by either installing them m
 pip install -r requirements.txt
 ```
 
-Run the python script. Depending on where you are pulling data from between Local, AWS, IBM, you must pass in a corresponding flag and have the ini section values populated.
+Run the python script. Depending on where you are pulling data from between Local, AWS, IBM, you must pass in a corresponding flag and have the ini section values populated. If you're providing a local file to import data from, you can pass in the `--delete` flag to have the file deleted after import.
 ```
-python data-transfer.py import-database.ini --i --local/--aws/--ibm
+python data-transfer.py import-database.ini --i --local/--aws/--ibm --delete
 ```
 
 #### Runtime for inserting 10,000 rows with 43 columns: 3.313s
