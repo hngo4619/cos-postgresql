@@ -49,6 +49,9 @@ NOTE: The table will be created if not already existing. If the table does exist
 Path: Path to the directory your CSV file is located
 Filename: Filename of your CSV file, please include .csv file extension here
 ```
+
+You can provide a `--delete` flag when running the Python script to have it delete the local file after importing the data to PostgreSQL.
+
 NOTE: If the values here are populated, the local file will take precedence over AWS. Therefore, if you want to upload a file from AWS to PostgreSQL instead, please leave these values blank.
 
 #### AWS Section
@@ -59,7 +62,7 @@ Bucket: Name of your bucket on AWS S3
 Filename: Filename for your CSV in your S3 Bucket
 ```
 
-#### IBM Section 
+#### IBM Section
 ```
 API_Key_ID: API Key from your Cloud Object Storage (COS) instance credentials
 Instance_ID: Instance ID of your COS instance
@@ -75,14 +78,14 @@ You need to install the required packages beforehand by either installing them m
 pip install -r requirements.txt
 ```
 
-Run the python script.
+Run the python script. Depending on where you are pulling data from between Local, AWS, IBM, you must pass in a corresponding flag and have the ini section values populated. If you're providing a local file to import data from, you can pass in the `--delete` flag to have the file deleted after import.
 ```
-python data-transfer.py import-database.ini --Import
+python data-transfer.py import-database.ini --i --local/--aws/--ibm --delete
 ```
 
 #### Runtime for inserting 10,000 rows with 43 columns: 3.313s
 
-## psql 
+## psql
 If you want to execute queries to insert data directly in Postgres using psql, you can do so after converting your CSV to a query. [CSV TO SQL](https://csvtosql.com/) is an easy to use online converter that supports the non-printable backspace character as a delimiter. Simply paste the contents of your CSV, paste the backspace character into the separator, and click Convert. You should then receive a SQL query for inserting the CSV data into the table (as well as a command to create a table which you shouldn't need). You may need to do a find-and-replace to insert the data into the correct table instead of the auto-generated one.
 
 ![CSV to SQL](csvtosql.png)
@@ -115,12 +118,11 @@ Password: Password corresponding to User
 Schema: Schema that your tables exist in
 ```
 
-
 #### Local Section
 ```
 Path: Path to the directory to store the CSV files
 ```
-NOTE: The name of the table is used as the CSV filename 
+NOTE: The name of the table is used as the CSV filename
 
 #### AWS Section
 ```
@@ -129,6 +131,7 @@ Secret_Access_Key: AWS Secret Access Key
 Bucket: Name of your bucket on AWS S3
 ```
 NOTE: Table name is used for the file uploaded
+
 #### IBM Section
 ```
 API_Key_ID: API Key from your Cloud Object Storage (COS) instance credentials
@@ -137,13 +140,14 @@ Auth_Endpoint: Authorization Endpoint for IBM Cloud. Typically this will be http
 Endpoint: Endpoint for your COS instance based on reigon. This will look something like https://s3.ap.cloud-object-storage.appdomain.cloud
 ```
 NOTE: Table name is used for the file uploaded
+
 ### Running the Script
 You need to install the required packages beforehand by either installing them manually or passing in the `requirements.txt` file to pip.
 ```
 pip install -r requirements.txt
 ```
 
-Run the python script.
+Run the python script. Depending on where you are exporting a CSV to between AWS S3 or IBM COS, you must pass in a corresponding flag and have the ini section values populated. You can optionally pass in the `--delete` flag to delete each local file created.
 ```
-python data-transfer.py export-database.ini --Export
+python data-transfer.py export-database.ini --e --aws/--ibm --delete
 ```

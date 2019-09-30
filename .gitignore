@@ -7,4 +7,4 @@ export-database.ini
 import-database.ini
 test-files/
 export.py
-.gitignore
+.DS_Store

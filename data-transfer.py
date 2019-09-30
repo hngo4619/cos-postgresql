@@ -30,8 +30,17 @@ import argparse
 ################################ Argument Parser ######################################
 parser  =   argparse.ArgumentParser(description='Supply config file and do Export or Import based on input')
 parser.add_argument('config',type=str, help="Configuration file")
-parser.add_argument('--Import', action='store_true', help="Use this argument to do the import process using provided configuration file")
-parser.add_argument('--Export', action='store_true', help="Use this argument to do the export process using provided configuration file")
+parser.add_argument('--delete', action='store_true', help="Use this argument to delete the local file after importing/exporting")
+
+flag = parser.add_mutually_exclusive_group(required=True)
+flag.add_argument('--i', action='store_true', help="Use this argument to do the import process using provided configuration file")
+flag.add_argument('--e', action='store_true', help="Use this argument to do the export process using provided configuration file")
+
+storage = parser.add_mutually_exclusive_group(required=True)
+storage.add_argument('--local', action='store_true', help="Use this argument to import from local file")
+storage.add_argument('--ibm', action='store_true', help="Use this argument to import from IBM COS")
+storage.add_argument('--aws', action='store_true', help="Use this argument to import from AWS S3")
+
 args    =   parser.parse_args()
 
 
@@ -127,11 +136,12 @@ def export(table):
 
 def cleanup_after_export(file):
     """ Delete local files """
-    try:
-        os.remove(file)
-        print("Deleted local file - ", file)
-    except OSError:
-        pass
+    if(args.delete):
+        try:
+            os.remove(file)
+            print("Deleted local file - ", file)
+        except OSError:
+            pass
 
 
 def upload(filename):
@@ -139,7 +149,7 @@ def upload(filename):
     aws = config(section='aws')
     ibm = config(section='ibm')
     local = config(section='local')
-    if aws.get('access_key_id').strip() and aws.get('secret_access_key').strip() and aws.get('bucket').strip():
+    if args.aws and aws.get('access_key_id').strip() and aws.get('secret_access_key').strip() and aws.get('bucket').strip():
         s3 = boto3.client(
             's3',
             aws_access_key_id=aws.get('access_key_id'),
@@ -148,7 +158,7 @@ def upload(filename):
 
         s3.upload_file(local.get('path') + '/' + filename , aws.get('bucket'), filename)
         print("File Uploaded to AWS S3 - ", filename)
-    elif ibm.get('api_key_id').strip() and ibm.get('instance_id').strip() and ibm.get('auth_endpoint').strip() and ibm.get('endpoint').strip() and ibm.get('bucket').strip():
+    elif args.ibm and ibm.get('api_key_id').strip() and ibm.get('instance_id').strip() and ibm.get('auth_endpoint').strip() and ibm.get('endpoint').strip() and ibm.get('bucket').strip():
 
         # IBM COS
         cos = ibm_boto3.resource("s3",
@@ -161,17 +171,28 @@ def upload(filename):
 
         cos.meta.client.upload_file(local.get('path') +  '/' + filename ,ibm.get('bucket'), filename)
         print("File Uploaded to IBM COS - ", filename)
+    elif args.local:
+        print("--local flag is not valid for export!!! To upload to COS or S3 choose --ibm or --aws respectively")
     else:
         print("Details are missing to upload through AWS/IBM COS")
 
 ################################## Import methods ########################################
 def cleanup(cur, conn):
+    params = config(section='local')
     """ Delete temp file if exists """
     try:
         os.remove("tmp_csv.csv")
         print("Temp file deleted.")
     except OSError:
         pass
+
+    """ Delete local file if passed in """
+    if(args.delete):
+        try:
+            os.remove('{}/{}'.format(params.get('path'), params.get('filename')))
+            print("Local file deleted.")
+        except OSError:
+            pass
 
     """ Close the database connection """
     cur.close()
@@ -209,10 +230,10 @@ def download():
     ibm = config(section='ibm')
     local = config(section='local')
 
-    if local.get('path').strip() and local.get('filename').strip():
+    if args.local and local.get('path').strip() and local.get('filename').strip():
         print("Local file located.")
         upload("{}/{}".format(local.get('path'), local.get('filename')))
-    elif aws.get('access_key_id').strip() and aws.get('secret_access_key').strip() and aws.get('bucket').strip() and aws.get('filename').strip():
+    elif args.aws and aws.get('access_key_id').strip() and aws.get('secret_access_key').strip() and aws.get('bucket').strip() and aws.get('filename').strip():
         client = boto3.client(
             's3',
             aws_access_key_id=aws.get('access_key_id'),
@@ -222,7 +243,7 @@ def download():
         client.download_file(aws.get('bucket'), aws.get('filename'), 'py_download_tmp_csv.csv')
         print("File downloaded from AWS S3.")
         upload("py_download_tmp_csv.csv")
-    elif ibm.get('api_key_id').strip() and ibm.get('instance_id').strip() and ibm.get('auth_endpoint').strip() and ibm.get('endpoint').strip() and ibm.get('bucket').strip() and ibm.get('filename').strip():
+    elif args.ibm and ibm.get('api_key_id').strip() and ibm.get('instance_id').strip() and ibm.get('auth_endpoint').strip() and ibm.get('endpoint').strip() and ibm.get('bucket').strip() and ibm.get('filename').strip():
         s3 = ibm_boto3.resource("s3",
             ibm_api_key_id=ibm.get('api_key_id'),
             ibm_service_instance_id=ibm.get('instance_id'),
@@ -272,7 +293,8 @@ if __name__ == '__main__':
     print(args.config)
     start = time.time()
     cur, conn = connect()
-    if (args.Export):
+
+    if (args.e):
         print("Export arg supplied")
         read_schema()
         """ Close the database connection """
@@ -281,7 +303,7 @@ if __name__ == '__main__':
         print('Database connection closed.')
 
 
-    if (args.Import):
+    if (args.i):
         print("Import arg supplied")
         create(cur, conn)
         download()
