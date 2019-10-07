@@ -1,6 +1,6 @@
 # DISCLAIMER
 This code is not designed for production. If you want to use it for production purposes, it is your responsibility to implement security measures as needed. The author or contributors to this repo will not be liable for any direct, indirect, incidental, special, exemplary, or consequential damages (including, but not
-limited to, procurement of substitute goods or services; loss of use,
+limited to, procurement of substitute services; loss of use,
 data, or profits; or business interruption). Use it at your own risk!
 
 
